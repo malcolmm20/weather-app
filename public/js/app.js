@@ -19,7 +19,7 @@ weatherForm.addEventListener('submit', (e) => {
                 messageOne.textContent = data.error
             } else {
                 messageOne.textContent =  data.location
-                messageTwo.textContent = data.maxtemp
+                messageTwo.textContent = "High of " + data.maxtemp + " degrees"
             }
         
         })

@@ -19,8 +19,8 @@ const forecast = (lat, long, callback) => {
             date = date + day
             callback(undefined, {
                 date,
-                mintemp: body.forecast[date].mintemp,
-                maxtemp: body.forecast[date].maxtemp
+                mintemp: body["forecast"][date].mintemp,
+                maxtemp: body["forecast"][date].maxtemp
             })
         }
         
