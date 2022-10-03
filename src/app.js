@@ -4,6 +4,7 @@ const hbs = require('hbs')
 
 const forecast = require('./utils/forecast')
 const geocode = require('./utils/geocode')
+const image = require('./utils/image')
 
 
 const app = express()
@@ -33,15 +34,15 @@ app.get('', (req, res) => {
 
 app.get('/about', (req, res) => {
     res.render('about', {
-        title: "About",
+        title: 'About',
         name: 'Malcolm Mackenzie'
     })
 })
 
 app.get('/help', (req, res) => {
     res.render('help', {
-        title: "Help",
-        helpMessage: "Here are some tips on how to use the website",
+        title: 'Help',
+        helpMessage: 'Here are some tips on how to use the website',
         name: 'Malcolm Mackenzie'
     })
 })
@@ -49,28 +50,40 @@ app.get('/help', (req, res) => {
 app.get('/weather', (req, res) => {
     if (!req.query.address) {
         return res.send({
-            error: "Must provide an address"
+            error: 'Must provide an address'
         })
     }
     
-
     geocode(req.query.address, (error, {latitude, longitude, location} = {}) => {
         if (error) {
             return res.send({
-                error
+                error: 'Error encountered'
             })
         } else if (!latitude) {
             return res.send({
-                error: "Invalid input"
+                error: 'Invalid input'
             })
         } else {
-            forecast(latitude, longitude, (error, {date, mintemp, maxtemp} = {}) => {
-                res.send({
-                    location,
-                    date,
-                    mintemp,
-                    maxtemp
-                })
+            forecast(latitude, longitude, (error, {date, temp, description} = {}) => {
+                if (error) {
+                    return res.send({
+                        error: 'Invalid forecast request'
+                    })
+                } else {
+                    image(latitude, longitude, (error, {retUrl, title, width, height} = {}) => {
+                        console.log('sent ' + retUrl)
+                        res.send({
+                            location,
+                            date,
+                            temp,
+                            description,
+                            retUrl, 
+                            title,
+                            width,
+                            height
+                        })
+                    })
+                }
             })
         }
     })
@@ -78,17 +91,17 @@ app.get('/weather', (req, res) => {
 
 app.get('/help/*', (resq, res) => {
     res.render('404', {
-        title: "Error 404 Page Not Found",
-        errorMessage: "Help article not found",
-        name: "Malcolm Mackenzie"
+        title: 'Error 404 Page Not Found',
+        errorMessage: 'Help article not found',
+        name: 'Malcolm Mackenzie'
     })
 })
 
 app.get('*', (req, res) => {
     res.render('404', {
-        title: "Error 404 Page Not Found",
-        errorMessage: "Please navigate to a valid page",
-        name: "Malcolm Mackenzie"
+        title: 'Error 404 Page Not Found',
+        errorMessage: 'Please navigate to a valid page',
+        name: 'Malcolm Mackenzie'
     })
 })
 

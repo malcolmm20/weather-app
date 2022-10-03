@@ -3,8 +3,10 @@ const request = require('request')
 const geocode = (address, callback) => {
     const url = 'http://api.positionstack.com/v1/forward?access_key=f01c3b42e1e4ed489fe697f8f23d3649&query=' + encodeURIComponent(address)
     request({ url: url, json: true}, (error, {body} = {}) => {
-        if (body.error) {
+        if (error) {
             callback('Unable to connect to weather services')
+        } else if (body.error) {
+            callback(body.error.info)
         } else if (body.data.length == 0) {
             callback('Invalid request')
         } else {

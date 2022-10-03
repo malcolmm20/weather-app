@@ -1,8 +1,12 @@
+const { getYear } = require('date-fns')
+
 request = require('request')
 
 
 const forecast = (lat, long, callback) => {
-    weatherurl = 'http://api.weatherstack.com/forecast?access_key=988432d4eecddc64bdeec46247955670&query=' + lat + ',' + long
+    weatherurl  = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/' + lat + '%2C%20' + long + '?unitGroup=metric&include=days&key=TRTM8DJKU5Q6QN9VR6NXQRLDK&contentType=json'
+    //weatherurl2 = 'http://api.weatherstack.com/forecast?access_key=988432d4eecddc64bdeec46247955670&query=' + lat + ',' + long
+
 
     request({ url: weatherurl, json: true }, (error, {body} = {}) => {
         if (error) {
@@ -10,22 +14,18 @@ const forecast = (lat, long, callback) => {
         } else if (body.error) {
             callback(body.error.info)
         } else {
-            date = body.location.localtime.substring(0, 8)
-            day = parseInt(body.location.localtime.substring(8, 10))
-            day = day - 1
-            if (day < 10) {
-                day = '0'.concat(day)
-            }
-            date = date + day
+            year = String(new Date().getFullYear())
+            currDate = Date(body['days'][0].datetime)
+            currDate = currDate.substring(0, currDate.search(year) - 1)
+            console.log(body['days'][0].description)
             callback(undefined, {
-                date,
-                mintemp: body["forecast"][date].mintemp,
-                maxtemp: body["forecast"][date].maxtemp
+                date: currDate,
+                temp: body['days'][0].temp,
+                description: body['days'][0].description
             })
         }
         
     })
 }
-
 
 module.exports = forecast
