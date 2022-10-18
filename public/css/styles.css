@@ -1,9 +1,10 @@
 body {
-    color: #333333;
+    color: #a7a7a7;
     font-family: arial;
     max-width: 750px;
     margin: 0 auto;
     padding: 16px;
+    background-color: #1e2532;
 
     display: flex;
     flex-direction: column;
@@ -23,12 +24,14 @@ footer {
 
 header {
     margin-top: 16px;
-    margin-bottom: 48px;
+    margin-bottom: 32px;
+    color: #305fa5;
 }
 
 h1 {
     font-size: 64px;
     margin-bottom: 16px;
+    color: #305fa5;
 }
 
 header a {

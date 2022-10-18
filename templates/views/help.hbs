@@ -11,7 +11,12 @@
 <body>
     <div class="main-content">
         {{>header}}
-        <p>{{helpMessage}}</p>
+        <p>{{helpMessage}}:</p>
+        <ul>
+            <li>Enter a location to see the forecast and a nearby webcam. Locations can be entered as addresses, city names, or coordinates.</li>
+            <li style="padding-top:10px">If there are no available webcams, try switching your search to a more populated area.</li>
+            <li style="padding-top:10px">Some webcams may not display because the webcam API doesn't have access to webcams in some countries. Some areas with little to no coverage are Northern and Central Africa, the Middle East, and Central South America.</li>
+        </ul>
     </div>
     
     {{>footer}}
