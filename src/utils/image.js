@@ -2,7 +2,7 @@ const { response } = require('express')
 const request = require('request')
 
 const image = (lat, long, callback) => {
-    const url = 'https://api.windy.com/api/webcams/v2/list/nearby=' + lat + ',' + long + ',25?key=XAMGltsXqzEcnp9q6aXIGW4xzSEbcx7F&show=webcams:image,category&category=forest'
+    const url = 'https://api.windy.com/api/webcams/v2/list/nearby=' + lat + ',' + long + ',25?key=XAMGltsXqzEcnp9q6aXIGW4xzSEbcx7F&show=webcams:image'
     request({ url: url, json: true}, (error, {body} = {}) => {
         if (error) {
             callback('Unable to connect to webcam services')
