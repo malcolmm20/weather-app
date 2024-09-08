@@ -4,14 +4,14 @@ const hbs = require('hbs')
 
 const forecast = require('./utils/forecast')
 const geocode = require('./utils/geocode')
-const image = require('./utils/image')
+const windy = require('./utils/image')
 
 
 const app = express()
 const port = process.env.PORT || 3000
 
 
-// define oaths for express config
+// define paths for express config
 const publicDirectoryPath = path.join(__dirname, '../public')
 const viewsPath = path.join(__dirname, '../templates/views')
 const partialsPath = path.join(__dirname, '../templates/partials')
@@ -57,7 +57,7 @@ app.get('/weather', (req, res) => {
     geocode(req.query.address, (error, {latitude, longitude, location} = {}) => {
         if (error) {
             return res.send({
-                error: 'Error encountered'
+                error: error
             })
         } else if (!latitude) {
             return res.send({
@@ -70,18 +70,31 @@ app.get('/weather', (req, res) => {
                         error: 'Invalid forecast request'
                     })
                 } else {
-                    image(latitude, longitude, (error, {retUrl, title, width, height} = {}) => {
-                        console.log('sent ' + retUrl)
-                        res.send({
-                            location,
-                            date,
-                            temp,
-                            description,
-                            retUrl, 
-                            title,
-                            width,
-                            height
-                        })
+                    windy.getWebcam(latitude, longitude, (error, {id, title} = {}) => {
+                        if (error) {
+                            return res.send({
+                                error: "Could not get webcam"
+                            })
+                        } else {
+                            windy.getImage(id, (error, {retUrl, width, height}) => {
+                                if (error) {
+                                    return res.send({
+                                        error: "could not get webcam preview"
+                                    })
+                                } else {
+                                    res.send({
+                                        location,
+                                        date,
+                                        temp,
+                                        description,
+                                        retUrl, 
+                                        title,
+                                        width,
+                                        height,
+                                    })
+                                }
+                            })
+                        }
                     })
                 }
             })

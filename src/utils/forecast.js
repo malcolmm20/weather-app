@@ -7,7 +7,7 @@ const forecast = (lat, long, callback) => {
     weatherurl  = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/' + lat + '%2C%20' + long + '?unitGroup=metric&include=days&key=TRTM8DJKU5Q6QN9VR6NXQRLDK&contentType=json'
     //weatherurl2 = 'http://api.weatherstack.com/forecast?access_key=988432d4eecddc64bdeec46247955670&query=' + lat + ',' + long
 
-
+    console.log(weatherurl)
     request({ url: weatherurl, json: true }, (error, {body} = {}) => {
         if (error) {
             callback('Unable to connect to weather services.')
