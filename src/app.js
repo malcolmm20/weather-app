@@ -5,7 +5,7 @@ const hbs = require('hbs')
 const forecast = require('./utils/forecast')
 const geocode = require('./utils/geocode')
 const windy = require('./utils/image')
-
+require('dotenv').config({path: "../.env"})
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -73,13 +73,13 @@ app.get('/weather', (req, res) => {
                     windy.getWebcam(latitude, longitude, (error, {id, title} = {}) => {
                         if (error) {
                             return res.send({
-                                error: "Could not get webcam"
+                                error: "No webcam available. Try refining your search area, or searching in a more populated area."
                             })
                         } else {
                             windy.getImage(id, (error, {retUrl, width, height}) => {
                                 if (error) {
                                     return res.send({
-                                        error: "could not get webcam preview"
+                                        error: "No webcam available. Try refining your search area, or searching in a more populated area."
                                     })
                                 } else {
                                     res.send({

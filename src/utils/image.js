@@ -2,9 +2,9 @@ const { response } = require('express')
 const request = require('request')
 
 const getWebcam = (lat, long, callback) => {
-    const url = 'https://api.windy.com/webcams/api/v3/webcams?nearby=' + lat +','+ long + ',25'
+    const url = `https://api.windy.com/webcams/api/v3/webcams?nearby=${lat},${long},25`
     console.log(url)
-    request({ headers: {"X-WINDY-API-KEY": 'XLLm2bLKmfx4UoxBF4bNVICnh9HGBFff'},
+    request({ headers: {"X-WINDY-API-KEY": process.env.WINDY_KEY},
         url: url, json: true}, (error, {body} = {}) => {
         if (error) {
             callback('Unable to connect to webcam services')
@@ -24,7 +24,7 @@ const getWebcam = (lat, long, callback) => {
 }
 
 const getImage = (id, callback) => {
-    const url = 'https://api.windy.com/webcams/api/v3/webcams/' + id + '?include=images'
+    const url = `https://api.windy.com/webcams/api/v3/webcams/${id}?include=images`
     console.log(url)
     request({ headers: {"X-WINDY-API-KEY": 'XLLm2bLKmfx4UoxBF4bNVICnh9HGBFff'},
         url: url, json: true}, (error, {body} = {}) => {
