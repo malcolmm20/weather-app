@@ -1,11 +1,13 @@
 const path = require('path')
 const express = require('express')
 const hbs = require('hbs')
+const axios = require('axios')
+const { promisify } = require('util');
+require('dotenv').config({path: "../.env"})
 
 const forecast = require('./utils/forecast')
 const geocode = require('./utils/geocode')
 const windy = require('./utils/image')
-require('dotenv').config({path: "../.env"})
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -28,7 +30,7 @@ app.use(express.static(publicDirectoryPath))
 app.get('', (req, res) => {
     res.render('index', {
         title: 'Weather Viewer',
-        name: 'Malcolm Mackenzie'
+        name: 'Malcolm Mackenzie',
     })
 })
 
@@ -47,60 +49,43 @@ app.get('/help', (req, res) => {
     })
 })
 
-app.get('/weather', (req, res) => {
+
+async function getWeatherData(latitude, longitude) {
+    const [forecastData, webcamData] = await Promise.all([
+      forecast(latitude, longitude),
+      windy.getWebcam(latitude, longitude),
+    ]);
+  
+    const imageData = await windy.getImage(webcamData.id);
+  
+    return {
+      ...forecastData,
+      ...webcamData,
+      ...imageData,
+    };
+}
+  
+app.get('/weather', async (req, res) => {
     if (!req.query.address) {
-        return res.send({
-            error: 'Must provide an address'
-        })
+      return res.status(400).send({ error: 'Must provide an address' });
     }
-    
-    geocode(req.query.address, (error, {latitude, longitude, location} = {}) => {
-        if (error) {
-            return res.send({
-                error: error
-            })
-        } else if (!latitude) {
-            return res.send({
-                error: 'Invalid input'
-            })
-        } else {
-            forecast(latitude, longitude, (error, {date, temp, description} = {}) => {
-                if (error) {
-                    return res.send({
-                        error: 'Invalid forecast request'
-                    })
-                } else {
-                    windy.getWebcam(latitude, longitude, (error, {id, title} = {}) => {
-                        if (error) {
-                            return res.send({
-                                error: "No webcam available. Try refining your search area, or searching in a more populated area."
-                            })
-                        } else {
-                            windy.getImage(id, (error, {retUrl, width, height}) => {
-                                if (error) {
-                                    return res.send({
-                                        error: "No webcam available. Try refining your search area, or searching in a more populated area."
-                                    })
-                                } else {
-                                    res.send({
-                                        location,
-                                        date,
-                                        temp,
-                                        description,
-                                        retUrl, 
-                                        title,
-                                        width,
-                                        height,
-                                    })
-                                }
-                            })
-                        }
-                    })
-                }
-            })
+  
+    try {
+        const { latitude, longitude, location } = await geocode(req.query.address);
+        if (!latitude || !longitude) {
+            return res.status(400).send({ error: 'Invalid input' });
         }
-    })
-})
+        const weatherData = await getWeatherData(latitude, longitude);
+    
+        res.send({
+            location,
+            ...weatherData,
+        });
+    } catch (error) {
+        console.error('Error in /weather endpoint:', error);
+        res.status(500).send({ error: error.message || 'An error occurred while processing your request' });
+    }
+});
 
 app.get('/help/*', (resq, res) => {
     res.render('404', {

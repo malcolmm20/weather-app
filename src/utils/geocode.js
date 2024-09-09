@@ -1,27 +1,36 @@
-const request = require('request')
+const axios = require('axios');
+require('dotenv').config()
 
-const geocode = (address, callback) => {
-    const url = `http://api.positionstack.com/v1/forward?access_key=${process.env.POSITION_STACK_KEY}&query='` + encodeURIComponent(address)
-    console.log(url)
-    request({ url: url, json: true}, (error, {body} = {}) => {
-        if (error) {
-            callback('Unable to connect to weather services')
-        } else if (body.error) {
-            callback(body.error.info)
-        } else if (body.data.length == 0) {
-            callback('Invalid request')
-        } else {
-            latitude = body.data[0].latitude
-            longitude = body.data[0].longitude
-            location = body.data[0].label
-                
-            callback(undefined, {
-                latitude,
-                longitude,
-                location
-            })
+
+const geocode = async (address) => {
+    const url = `http://api.positionstack.com/v1/forward`;
+    try {
+        const response = await axios.get(url, {
+            params: {
+                access_key: process.env.POSITION_STACK_KEY,
+                query: address,
+            }
+        });
+        const body = response.data;
+        if (body.error) {
+            throw new Error(body.error.info);
         }
-    })
-}
 
-module.exports = geocode
+        if (body.data.length === 0) {
+            throw new Error('Invalid request');
+        }
+        const { latitude, longitude, label: location } = body.data[0];
+        
+        return { latitude, longitude, location };
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data.error?.info || 'Error in geocoding service response');
+        } else if (error.request) {
+            throw new Error('Unable to connect to geocoding services');
+        } else {
+            throw error;
+        }
+    }
+};
+
+module.exports = geocode;
