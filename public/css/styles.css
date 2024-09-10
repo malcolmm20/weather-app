@@ -1,3 +1,5 @@
+@import "~@geoapify/geocoder-autocomplete/styles/minimal.css";
+
 body {
     color: #a7a7a7;
     font-family: arial;
@@ -16,7 +18,7 @@ body {
 }
 
 footer {
-    color: #bf5c35;
+    color: #d3d3d3;
     border-top: 1px solid #eeeeee;
     margin-top: 16px;
     padding: 8px 0; 
@@ -35,7 +37,7 @@ h1 {
 }
 
 header a {
-    color: #bf5c35;
+    color: #d3d3d3;
     margin-right: 16px;
     text-decoration: none;
 }
@@ -45,14 +47,42 @@ header a {
 }
 
 input {
+    border-radius: 10px;
     border: 1px solid #305fa5;
     padding: 8px;
 }
 
 button {
+    border-radius: 10px;
     cursor: pointer;
     border: 1px solid #cccccc;
     background: #305fa5;
     color: white;
     padding: 8px;
+    margin-left: 8px;
+}
+
+.scrollable-div {
+    overflow: auto;
+}
+
+.scrollable-div::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-div::-webkit-scrollbar-track {
+    background: transparent; 
+}
+
+.scrollable-div::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 10px; 
+}
+
+.scrollable-div::-webkit-scrollbar-thumb:hover {
+    background: #305fa5; 
+}
+
+.scrollable-div::-webkit-scrollbar-corner {
+    background: transparent; 
 }

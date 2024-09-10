@@ -2,7 +2,6 @@ const path = require('path')
 const express = require('express')
 const hbs = require('hbs')
 const axios = require('axios')
-const { promisify } = require('util');
 require('dotenv').config({path: "../.env"})
 
 const forecast = require('./utils/forecast')
@@ -87,7 +86,25 @@ app.get('/weather', async (req, res) => {
     }
 });
 
-app.get('/help/*', (resq, res) => {
+app.get('/locationSuggestions', async (req, res) => {
+    if (!req.query.location) {
+        return res.status(400).send({error: 'Invalid Input'})
+    }
+    const url = `https://api.geoapify.com/v1/geocode/autocomplete`
+    try {
+        const suggestions = await axios.get(url, {
+            params: {
+                text: req.query.location,
+                apiKey: process.env.GEOAPIFY_KEY,
+            }
+        })
+        res.json(suggestions.data.features.map(suggestion => suggestion.properties.formatted).sort((location, other) => location.startsWith(req.query.location)))
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch suggestions' })
+    }
+})
+
+app.get('/help/*', (req, res) => {
     res.render('404', {
         title: 'Error 404 Page Not Found',
         errorMessage: 'Help article not found',

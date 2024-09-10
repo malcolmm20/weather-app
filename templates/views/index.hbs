@@ -6,15 +6,44 @@
     <title>Weather</title>
     <link rel="icon" href="/img/logo.png">
     <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .autocomplete-container {
+            width: 50%;
+        }
+        #autocomplete {
+            width: 95%;
+        }
+        #suggestions {
+            max-height: 150px;
+            overflow-y: auto;
+            position: absolute;
+            background: white;
+            width: 95%;
+            border-radius: 10px;
+        }
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .suggestion-item:hover {
+            background-color: #ddd;
+        }
+        form {
+            display: flex;
+            flex-direction: row;
+        }
+    </style>
 </head>
 
 <body>
     <div class="main-content">
         {{>header}}
 
-        <p>Enter a location to see the forecast</p>
         <form>
-            <input placeholder="Enter a location">
+            <div class="autocomplete-container" style="position: relative;">
+                <input id="autocomplete" type="search" placeholder="Enter a location" onblur=""/>
+                <div id="suggestions" class="scrollable-div"></div>
+            </div>
             <button>Search</button>
         </form>
 
